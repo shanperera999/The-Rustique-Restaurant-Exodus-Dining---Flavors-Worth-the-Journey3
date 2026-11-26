@@ -9,6 +9,10 @@
     content="An intimate four-table boutique restaurant in Nuwara Eliya, Sri Lanka, serving authentic mom's home-cooked breakfasts, lunches, and dinners."
   />
 
+  <!-- Browser Tab Favicon -->
+  <link id="siteFavicon" rel="icon" type="image/png" href="image_ba9726.png" />
+  <link id="siteAppleIcon" rel="apple-touch-icon" href="image_ba9726.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -97,6 +101,21 @@
       width: 24px;
       height: 1px;
       background: var(--brass);
+    }
+
+    /* Header brand starts hidden at top and reveals on scroll */
+    #headerBrandReveal {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: opacity 0.4s var(--ease-out-expo), transform 0.4s var(--ease-out-expo), visibility 0.4s ease;
+    }
+    #siteHeader.is-scrolled #headerBrandReveal {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .nav-link {
@@ -1536,7 +1555,7 @@
 
             <button type="button" onclick="openLightbox(2)" class="gallery-card group relative rounded-sm text-left">
               <img
-                src="IMG_3964.jpeg"
+                src="IMG_8892_beb93e.jpg"
                 alt="Slatted wooden partition and crochet lace tablecloth"
                 loading="lazy"
                 onerror="this.onerror=null;this.src='https://placehold.co/600x700/2B1B13/FCF8F0?text=Crochet+Linen';"
@@ -2246,6 +2265,23 @@
     const WHATSAPP_NUMBER = '94702986611';
     const RESERVATIONS_EMAIL = 'reservations@therustiquerestaurant.com';
 
+    // Ensure browser tab favicon loads with automatic fallback
+    (function ensureFavicon() {
+      const probe = new Image();
+      probe.onerror = () => {
+        const icon = document.getElementById('siteFavicon');
+        const apple = document.getElementById('siteAppleIcon');
+        if (icon) {
+          icon.type = 'image/jpeg';
+          icon.href = 'IMG_3964_beb93e.jpeg';
+        }
+        if (apple) {
+          apple.href = 'IMG_3964_beb93e.jpeg';
+        }
+      };
+      probe.src = 'image_ba9726.png';
+    })();
+
     function filterExperiences(category) {
       document.querySelectorAll('[data-exp-filter]').forEach(btn => {
         btn.setAttribute('aria-pressed', String(btn.dataset.expFilter === category));
@@ -2578,7 +2614,7 @@
     const galleryItems = [
       { src: 'IMG_8896_beb93e.jpg', caption: 'Mirrored Shelves & Woven Rattan Pendant' },
       { src: 'IMG_8895_beb93e.jpg', caption: 'Warm Slatted Timber & Exposed Brick Sanctuary' },
-      { src: 'IMG_3964.jpeg', caption: 'Crochet-Edged Linen Table & Timber Screen' },
+      { src: 'IMG_8892_beb93e.jpg', caption: 'Crochet-Edged Linen Table & Timber Screen' },
       { src: 'IMG_8893_beb93e.jpg', caption: 'Inner Alcove Teak Tables & Colonial French Doors' },
       { src: 'IMG_8894_beb93e.jpg', caption: 'Evening Warm Glow Across Our Four Tables' },
       { src: 'Breakfast.jpg', caption: 'Morning Breakfast — Ceylon Milk Tea, Waffles & Fresh Highland Fruit' },
@@ -2851,16 +2887,21 @@
     const backTopBtn = document.getElementById('backToTop');
     let scrollTick = false;
 
+    function syncHeaderScrollState() {
+      const currentY = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = maxScroll > 0 ? (currentY / maxScroll) * 100 : 0;
+      progressBar.style.width = `${pct}%`;
+      backTopBtn.classList.toggle('visible', currentY > 520);
+      if (siteHeader) siteHeader.classList.toggle('is-scrolled', currentY > 420);
+    }
+
+    syncHeaderScrollState();
     window.addEventListener('scroll', () => {
       if (scrollTick) return;
       scrollTick = true;
       requestAnimationFrame(() => {
-        const currentY = window.scrollY;
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        const pct = maxScroll > 0 ? (currentY / maxScroll) * 100 : 0;
-        progressBar.style.width = `${pct}%`;
-        backTopBtn.classList.toggle('visible', currentY > 520);
-        if (siteHeader) siteHeader.classList.toggle('is-scrolled', currentY > 80);
+        syncHeaderScrollState();
         scrollTick = false;
       });
     }, { passive: true });
